@@ -4,6 +4,8 @@ const url  = require('url')
 const port = 3000
 
 const server = http.createServer((req, res) => {
+
+    
     const q = url.parse(req.url,true)
     const filename = q.pathname.substring(1) // pega somente o nome, depois do index.html
 
@@ -13,7 +15,7 @@ const server = http.createServer((req, res) => {
         if(fs.existsSync(filename)){
             fs.readFile(filename, function(err,data){
                 res.writeHead(200,{'Content-Type' : 'text/html'})
-                res.write(filename)
+                res.write(data)
                 return res.end()
             })
         }
