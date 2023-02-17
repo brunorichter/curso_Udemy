@@ -38,8 +38,10 @@ function operation() {
         }else if(action === 'Depositar'){
             deposit()
         }else if(action === 'Consultar Saldo'){
+            getAccountBalance()
 
         }else if(action === 'Sacar'){
+            widthDraw()
 
         }else if(action === 'Sair'){
             console.log(chalk.bgBlue.black('Obrigado por utilizar o sistema!'))
@@ -133,9 +135,30 @@ function deposit(){
         }).catch(err => console.log(err))
 }
 
+function widthDraw(){
+    inquirer
+            .prompt([{
+                name:'accountName',
+                message:'Qual o nome da conta?'
+            }])
+            .then((answer) => {
+                const accountName = answer['accountName']
+                if(!checkAccount(accountName)){
+                    return deposit()
+                }
+                inquirer.prompt([{
+                    name: 'amount',
+                    message: 'Quanto você deseja sacar?'
+                }])
+                .then((answer) => {
+                    const amount = answer['amount']
+                    delAmount(accountName,amount)
 
 
+                }).catch(err => console.log(err))
 
+            }).catch(err => console.log(err))
+        }
 
 
 function checkAccount(accountName){
@@ -176,5 +199,56 @@ function addAmount(accountName, amount){
 
     console.log(chalk.bgGreen.black(`Foi depositado o valor de R$${amount} na sua conta`))
     operation()
+
+}
+
+function delAmount(accountName, amount){
+
+    const accountData = getAccount(accountName)
+
+    if(!amount){
+        console.log(chalk.bgRed.black('Digite um valor válido'))
+        return deposit()
+    }
+    
+    if(parseFloat(accountData.balance) < parseFloat(amount)){
+        console.log(chalk.bgRed.black(`Saldo insuficiente na conta`))
+        return widthDraw()
+    }
+
+    accountData.balance = parseFloat(accountData.balance) - parseFloat(amount)    //Soma novo valor com valor atual na conta
+
+    /////////////////////   ESCREVENDO ARQUIVO  ////////////////////////////////////////////
+    //                       arquivo                   "valor a escrever"            "erro"
+    fs.writeFileSync(`accounts/${accountName}.json`, JSON.stringify(accountData), function(err){ // escreve novo valor transformando novamente em JSON
+        console.log(err)
+    })
+
+    console.log(chalk.bgGreen.black(`Foi sacado o valor de R$ ${amount} na sua conta`))
+    operation()
+
+}
+
+function getAccountBalance(){
+    inquirer.prompt([
+        {
+            name: 'accountName',
+            message: 'Qual a conta?'
+    }
+    ]).then((answer) => {
+
+        const accountName = answer['accountName']
+
+        if(!checkAccount(accountName)){
+            return getAccountBalance
+        }
+        // se a conta existe
+
+        const accountData = getAccount(accountName)
+
+        console.log(chalk.bgBlue.black(`Seu saldo é de R$ ${accountData.balance}`))
+        operation()
+
+    }).catch((err) => console.log(err))
 
 }
