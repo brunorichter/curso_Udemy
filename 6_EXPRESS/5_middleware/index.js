@@ -11,14 +11,15 @@ const checkAuth = function(req,res,next){
 
     if(req.authStatus){
         console.log("Usuário está logado")
+        next() // não deixar load infinito - Seguir proxima etapa
     }else {
         console.log("Por favor, faça o login!")
+        next() // não deixar load infinito - redirecionar Login
     }
 
 }
 
-
-
+app.use(checkAuth)
 
 app.get('/', (req,res) => {
     //req uisição é o que o usuario manda (RECEBEMOS)

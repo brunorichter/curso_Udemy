@@ -1,0 +1,15 @@
+<h1>MAIN MENU</h1>
+<p>buenas {{user.name}} {{user.surname}}</p>
+
+<h3>{{palavra}}</h3>
+{{#if approved}}
+<p>Parabéns, seu cadastro foi aprovado</p>
+{{else}}
+<p>Seu cadastro está pendente de aprovação</p>
+{{/if}}
+
+{{#if auth}}
+<p>Usuário autenticado</p>
+<p><a href="/dashboard">Clique aqui</a> para acessar a área de membros</p>
+
+{{/if}}
